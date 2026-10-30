@@ -1,1 +1,408 @@
-https://script.google.com/macros/s/AKfycbxy2a_6VKq7nNrHj_6-1vBM4FEd88RuZ8-CVdDp8zwUkam4Ka4HHBi_YpxIq_AbLhPo/exec
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Scan Peran Jumbara PMR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pmi-red: #D62828;
+    --pmi-red-dark: #A81C1C;
+    --pmi-red-light: #FFE5E5;
+    --white: #FFFFFF;
+    --ink: #1A1A1A;
+    --muted: #6B7280;
+    --bg: #FAFAFA;
+    --shadow: 0 4px 20px rgba(214, 40, 40, 0.08);
+    --shadow-lg: 0 8px 30px rgba(214, 40, 40, 0.15);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 30px;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--pmi-red) 0%, var(--pmi-red-dark) 100%);
+    color: var(--white);
+    padding: 20px 20px 26px;
+    border-radius: 0 0 24px 24px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .logo {
+    width: 44px; height: 44px;
+    background: var(--white);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--pmi-red);
+    font-size: 13px;
+    letter-spacing: -0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .header-text h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .header-text p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+
+  .pos-bar {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 6px 6px 16px;
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .pos-bar label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+  }
+  .pos-bar select {
+    flex: 1;
+    background: var(--white);
+    color: var(--pmi-red);
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23D62828' stroke-width='3' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+
+  .scanner-wrap {
+    margin: 20px 16px 0;
+    background: #000;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    aspect-ratio: 1 / 1;
+    max-height: 70vh;
+  }
+  #reader {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+  }
+  #reader video {
+    object-fit: cover !important;
+    border-radius: 20px;
+  }
+  #reader__scan_region {
+    background: transparent !important;
+  }
+  #reader__dashboard {
+    display: none !important;
+  }
+  .scan-frame {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+  .scan-frame::before,
+  .scan-frame::after,
+  .scan-frame .corner-b,
+  .scan-frame .corner-c {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--white);
+    border-radius: 4px;
+  }
+  .scan-frame::before { top: 18%; left: 15%; border-right: none; border-bottom: none; border-top-left-radius: 14px; }
+  .scan-frame::after { top: 18%; right: 15%; border-left: none; border-bottom: none; border-top-right-radius: 14px; }
+  .scan-frame .corner-b { bottom: 18%; left: 15%; border-right: none; border-top: none; border-bottom-left-radius: 14px; }
+  .scan-frame .corner-c { bottom: 18%; right: 15%; border-left: none; border-top: none; border-bottom-right-radius: 14px; }
+  .scan-line {
+    position: absolute;
+    left: 15%; right: 15%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--white), transparent);
+    box-shadow: 0 0 12px rgba(255,255,255,0.8);
+    animation: scanline 2s ease-in-out infinite;
+    top: 25%;
+  }
+  @keyframes scanline {
+    0%, 100% { top: 22%; opacity: 0.8; }
+    50% { top: 78%; opacity: 1; }
+  }
+
+  #info {
+    text-align: center;
+    margin: 18px 16px 0;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--muted);
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    min-height: 22px;
+    transition: all 0.3s;
+  }
+  #info.success { color: #0F9D58; background: #E6F4EA; }
+  #info.error { color: var(--pmi-red); background: var(--pmi-red-light); }
+
+  #form {
+    margin: 16px;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease-out;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .form-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .kode-badge {
+    display: inline-block;
+    background: var(--pmi-red-light);
+    color: var(--pmi-red);
+    font-size: 18px;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .peran-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .peran-btn {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 18px 12px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: var(--white);
+    color: var(--pmi-red);
+    border-color: var(--pmi-red-light);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .peran-btn .icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .peran-btn:active {
+    background: var(--pmi-red);
+    color: var(--white);
+    border-color: var(--pmi-red);
+    transform: scale(0.97);
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  footer span { color: var(--pmi-red); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">PMI</div>
+    <div class="header-text">
+      <h1>Scan Peran Jumbara</h1>
+      <p>PMR — Entri Data Peran Peserta</p>
+    </div>
+  </div>
+  <div class="pos-bar">
+    <label>POS</label>
+    <select id="pos">
+      <option>Pos 1</option>
+      <option>Pos 2</option>
+      <option>Pos 3</option>
+      <option>Pos 4</option>
+      <option>Pos 5</option>
+      <option>Pos 6</option>
+    </select>
+  </div>
+</header>
+
+<div class="scanner-wrap">
+  <div id="reader"></div>
+  <div class="scan-frame">
+    <div class="corner-b"></div>
+    <div class="corner-c"></div>
+    <div class="scan-line"></div>
+  </div>
+</div>
+
+<div id="info">Arahkan kamera ke barcode peserta</div>
+
+<div id="form" style="display:none">
+  <div class="form-label">Kode Peserta</div>
+  <div class="kode-badge" id="kodeLabel"></div>
+  <div class="form-label">Pilih Peran</div>
+  <div class="peran-grid">
+    <button class="peran-btn" onclick="simpan('Pemimpin')">
+      <span class="icon">👑</span> Pemimpin
+    </button>
+    <button class="peran-btn" onclick="simpan('Anggota')">
+      <span class="icon">👥</span> Anggota
+    </button>
+    <button class="peran-btn" onclick="simpan('Teori')">
+      <span class="icon">📖</span> Teori
+    </button>
+    <button class="peran-btn" onclick="simpan('Praktik')">
+      <span class="icon">🛠️</span> Praktik
+    </button>
+  </div>
+</div>
+
+<footer>Jumbara PMR &middot; <span>Palang Merah Indonesia</span></footer>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+// ====== GANTI DENGAN URL APPS SCRIPT KAMU ======
+const URL_APP = 'https://script.google.com/macros/s/AKfycbxy2a_6VKq7nNrHj_6-1vBM4FEd88RuZ8-CVdDp8zwUkam4Ka4HHBi_YpxIq_AbLhPo/exec';
+
+let kodeAktif = null;
+let busy = false;
+
+const selPos = document.getElementById('pos');
+const saved = localStorage.getItem('pos');
+selPos.value = [...selPos.options].some(o => o.value === saved) ? saved : 'Pos 1';
+selPos.onchange = () => localStorage.setItem('pos', selPos.value);
+
+const info = document.getElementById('info');
+
+function setInfo(text, type) {
+  info.innerText = text;
+  info.className = type || '';
+}
+
+const scanner = new Html5Qrcode("reader");
+scanner.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  onScan
+).catch(err => {
+  setInfo('❌ Kamera gagal: ' + err, 'error');
+});
+
+async function onScan(kode) {
+  if (busy || kodeAktif) return;
+  busy = true;
+  await scanner.pause(true);
+
+  kodeAktif = kode.trim();
+  document.getElementById('kodeLabel').innerText = kodeAktif;
+  document.getElementById('form').style.display = 'block';
+  setInfo('Pilih peran untuk ' + kodeAktif);
+
+  if (navigator.vibrate) navigator.vibrate(50);
+}
+
+async function simpan(peran) {
+  if (!kodeAktif || !peran) return;
+
+  setInfo('Menyimpan...');
+
+  try {
+    const r = await fetch(URL_APP, {
+      method: 'POST',
+      body: JSON.stringify({ kode: kodeAktif, pos: selPos.value, peran })
+    }).then(x => x.json());
+
+    if (r.ok) {
+      setInfo('✅ ' + kodeAktif + ' → ' + peran + ' @ ' + selPos.value, 'success');
+      if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
+    } else {
+      setInfo('⚠️ Gagal simpan: ' + (r.message || ''), 'error');
+    }
+  } catch (e) {
+    setInfo('⚠️ Error koneksi', 'error');
+  }
+
+  kodeAktif = null;
+  document.getElementById('form').style.display = 'none';
+  setTimeout(() => { busy = false; scanner.resume(); }, 900);
+}
+</script>
+</body>
+</html>
